@@ -3,7 +3,11 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import * as dotenv from 'dotenv';
 import { getAll, getById, create, update, remove } from './dynamodb/index.js';
-import { MISSING_TABLENAME } from './error-responses.js';
+import {
+  MISSING_TABLENAME,
+  MISSING_ID,
+  MISSING_BODY,
+} from './error-responses.js';
 
 let client;
 

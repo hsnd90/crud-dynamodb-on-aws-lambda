@@ -1,14 +1,16 @@
-export const MISSING_TABLENAME = {
+const MISSING_TABLENAME = {
   statusCode: 400,
   errorMessage: 'Missing TableName',
 };
 
-export const MISSING_ID = {
+const MISSING_ID = {
   statusCode: 400,
   errorMessage: 'Missing id',
 };
 
-export const MISSING_BODY = {
+const MISSING_BODY = {
   statusCode: 400,
   errorMessage: 'Missing data',
 };
+
+export { MISSING_BODY, MISSING_ID, MISSING_TABLENAME };
