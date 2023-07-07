@@ -5,6 +5,8 @@
 
  You can create Lambda by uploading the dist.zip file in the repository.
 
+ Don't forget to create the table in DynamoDB!
+
  You can use it as a RESTful API.
 
 GetAll ( HttpMethod=GET ) 
