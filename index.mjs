@@ -1,7 +1,7 @@
+import * as dotenv from 'dotenv';
 dotenv.config();
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import * as dotenv from 'dotenv';
 import { getAll, getById, create, update, remove } from './dynamodb/index.js';
 import {
   MISSING_TABLENAME,
@@ -26,12 +26,14 @@ if (process.env.NODE_ENV === 'development') {
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const handler = async (event) => {
-  let httpMethod = event.requestContext?.http?.method ?? event.httpMethod;
+  let httpMethod = event.requestContext?.http?.method ?? event?.httpMethod;
 
   let tableName =
-    process.env.TABLE_NAME ?? event.queryStringParameters?.tableName;
+    process.env.TABLE_NAME ??
+    event.queryStringParameters?.tableName ??
+    event?.tableName;
 
-  let id = event.queryStringParameters?.id;
+  let id = event.queryStringParameters?.id ?? event?.id;
 
   let body = event?.body ? JSON.parse(event.body) : null;
 
