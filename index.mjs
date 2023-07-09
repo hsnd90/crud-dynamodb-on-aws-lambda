@@ -2,7 +2,14 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { getAll, getById, create, update, remove } from './dynamodb/index.js';
+import {
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+  getBy,
+} from './dynamodb/index.js';
 import {
   MISSING_TABLENAME,
   MISSING_ID,
@@ -26,16 +33,24 @@ if (process.env.NODE_ENV === 'development') {
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const handler = async (event) => {
-  let httpMethod = event.requestContext?.http?.method ?? event?.httpMethod;
+  let httpMethod = event.httpMethod ?? event.requestContext?.http?.method;
 
   let tableName =
     process.env.TABLE_NAME ??
     event.queryStringParameters?.tableName ??
-    event?.tableName;
+    event.tableName;
 
-  let id = event.queryStringParameters?.id ?? event?.id;
+  let id = event?.id ?? event.queryStringParameters?.id;
 
-  let body = event?.body ? JSON.parse(event.body) : null;
+  let prop = event?.prop ?? event.queryStringParameters?.prop;
+  let value = event?.value ?? event.queryStringParameters?.value;
+
+  let body =
+    event?.body && typeof event.body == 'string'
+      ? JSON.parse(event.body)
+      : event?.body
+      ? event.body
+      : null;
 
   if (!tableName) return MISSING_TABLENAME;
 
@@ -55,6 +70,11 @@ export const handler = async (event) => {
   async function getRecordById(id) {
     if (!id) return MISSING_ID;
     let result = await getById(docClient, tableName, id);
+    return setResponse(result);
+  }
+
+  async function getRecordByQuery(query) {
+    let result = await getBy(docClient, tableName, query.prop, query.value);
     return setResponse(result);
   }
 
@@ -80,6 +100,7 @@ export const handler = async (event) => {
   switch (httpMethod) {
     case 'GET':
       if (id) return await getRecordById(id);
+      else if (prop && value) return await getRecordByQuery({ prop, value });
       else return await getAllRecord();
     case 'POST':
       return await createRecord(body);
@@ -90,4 +111,11 @@ export const handler = async (event) => {
   }
 };
 
-console.log(await handler({ tableName: 'news', httpMethod: 'GET' }));
+console.log(
+  await handler({
+    tableName: 'news',
+    httpMethod: 'GET',
+    prop: 'newsId',
+    value: '-1807879164',
+  })
+);
