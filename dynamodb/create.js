@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 
 const create = async (client, tableName, data) => {
   let record = {
-    id: v4(),
+    id: data?.id.toString() ?? v4(),
     ...data,
   };
   let command = new PutCommand({
